@@ -20,7 +20,7 @@ function createMap(){
 //function to retrieve the data and place it on the map
 function getData(map){
     //Example 2.3 line 22...load the data
-    $.ajax("data/MegaCities.geojson", {
+    $.ajax("data/megaCities.geojson", {
         dataType: "json",
         success: function(response){
             //create marker options
