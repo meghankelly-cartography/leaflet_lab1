@@ -1,5 +1,4 @@
-/*Leaflet Quick Start Guide*/
-
+//Leaflet Start Guide Tutorial and commenting
 //setView centers the map at a particular zoom level
 var map = L.map('map').setView([51.505, -0.09], 13);
 
