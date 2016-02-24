@@ -32,13 +32,27 @@ function createSequenceControls(map){
     
     $('#panel').append('<button class="skip" id="reverse">Back</button>');
     $('#panel').append('<button class="skip" id="forward">Forward</button>');
+    
+    //click listener for buttons
+    $('.skip').click(function(){
+        //sequence
+    });
+
+    $('.range-slider').on('input', function(){
+        //Step 6: get the new index value
+        var index = $(this).val();
+    });
+    
+    //This test didn't work...
+    //console.log(index); 
 };
+
+//create empty array to hold attributes, use square brackets
+	var attributes = [];
 
 //Build array that houses attributes from data
 function processData(data){
-	
-	//create empty array to hold attributes, use square brackets
-	var attributes = [];
+
 	
 	//create variable of first feature in data
 	var properties = data.features[0].properties;
@@ -84,36 +98,16 @@ function getData(map){
 };
 $(document).ready(createMap);
 
-//Step 3: Add circle markers for point features to the map
-function createPropSymbols(data, map){
-    
-    // define variable that is an attribute or property
-    var attribute = "month_April";
-    
-    //create marker options
-    var geojsonMarkerOptions = {
-        //radius: 4,
-        fillColor: "blue",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.6
-    };
-	
-    //Example 1.4 line 8...create a Leaflet GeoJSON layer and add it to the map
+//Example 2.1 line 34...Add circle markers for point features to the map
+function createPropSymbols(data, map, attributes){
+    //create a Leaflet GeoJSON layer and add it to the map
     L.geoJson(data, {
-        pointToLayer: function (feature, latlng) {
-            //Step 5: For each feature, determine its value for the selected attribute
-            var attValue = Number(feature.properties[attribute]);
-
-            //Step 6: Give each feature's circle marker a radius based on its attribute value
-            geojsonMarkerOptions.radius = calcPropRadius(attValue);
-
-            //create circle markers
-            return L.circleMarker(latlng, geojsonMarkerOptions);
+        pointToLayer: function(feature, latlng){
+            return pointToLayer(feature, latlng, attributes);
         }
     }).addTo(map);
 };
+
 
 //calculate the radius of each proportional symbol
 function calcPropRadius(attValue) {
@@ -129,8 +123,9 @@ function calcPropRadius(attValue) {
 
 //function to convert markers to circle markers
 function pointToLayer(feature, latlng){
-	//Determine which attribute to visualize with proportional symbols
-	var attribute = "month_April";
+	var attribute = attributes[0];
+    //check
+    console.log(attribute);
 	
 	//Create marker options
 	var options = {
@@ -180,13 +175,6 @@ function pointToLayer(feature, latlng){
 	return layer;
 };
 
-//Add Circle Markers for point features to map
-function createPropSymbols(data, map){
-	//Create a leaflet geojson layer and add it to the map
-	L.geoJson(data, {
-		pointToLayer: pointToLayer
-	}).addTo(map);
-};
 
 
 
