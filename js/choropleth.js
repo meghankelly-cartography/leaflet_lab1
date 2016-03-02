@@ -29,14 +29,12 @@ function getData2(map){
 };
 
 function getColor(d) {
-    return d > 10000000 ? '#800026' :
-           d > 5000000  ? '#BD0026' :
-           d > 2000000  ? '#E31A1C' :
-           d > 1000000  ? '#FC4E2A' :
-           d > 500000   ? '#FD8D3C' :
-           d > 200000   ? '#FEB24C' :
-           d > 100000   ? '#FED976' :
-                      '#FFEDA0';
+    return d > 10000000 ? '#08519c' :
+           d > 5000000  ? '#3182bd' :
+           d > 2000000  ? '#6baed6' :
+           d > 1000000  ? '#bdd7e7' :
+           d > 500000   ? '#eff3ff' :
+                      'white';
 }
 
 function style(feature) {

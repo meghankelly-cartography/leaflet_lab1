@@ -1,10 +1,9 @@
-//Map of GeoJSON data from MegaCities.geojson
 //function to instantiate the Leaflet map
 function createMap(){
     //create the map
     var map = L.map('map', {
         center: [54, 10],
-        zoom: 3
+        zoom: 3,
     });
 
 	L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
@@ -13,14 +12,50 @@ function createMap(){
 
     //call getData function
     getData(map);
+    //getDataChoro(map);
 };
+
+// //Import GeoJSON data
+// function getDataChoro(map){
+//     //load the data with callback function
+//     $.ajax("data/europeData.geojson", {
+//         dataType: "json",
+//         success: function(response){
+
+//             choropleth = response;
+//            //create a Leaflet GeoJSON layer and add it to the map
+//             L.geoJson(choropleth, {style: style}).addTo(map);
+//             L.control.layers(choropleth).addTo(map);
+//         }
+//     });
+// };
+
+// function getColor(d) {
+//     return d > 10000000 ? '#08519c' :
+//            d > 5000000  ? '#3182bd' :
+//            d > 2000000  ? '#6baed6' :
+//            d > 1000000  ? '#bdd7e7' :
+//            d > 500000   ? '#eff3ff' :
+//                           'white';
+// }
+
+// function style(feature) {
+//     return {
+//         fillColor: getColor(feature.properties.pop_est),
+//         weight: 1,
+//         opacity: 1,
+//         color: 'white',
+//         dashArray: '3',
+//         fillOpacity: 0.6
+//     };
+// }
 
 
 
 //calculate the radius of each proportional symbol
 function calcPropRadius(attValue) {
     //scale factor to adjust symbol size evenly
-    var scaleFactor = .5;
+    var scaleFactor = .4;
     //area based on attribute value and scale factor
     var area = attValue * scaleFactor;
     //radius calculated based on area
@@ -100,27 +135,35 @@ function createPropSymbols(data, map, attributes){
 
 //Step 10: Resize proportional symbols according to new attribute values
 function updatePropSymbols(map, attribute){
-        //Example 3.16 line 4
-        if (layer.feature && layer.feature.properties[attribute]){
-            //access feature properties
-            var props = layer.feature.properties;
 
-            //update each feature's radius based on new attribute values
-            var radius = calcPropRadius(props[attribute]);
-            layer.setRadius(radius);
+        map.eachLayer(function(layer, feature){
+            if (layer.feature && layer.feature.properties[attribute]){
+                        //access feature properties
+                        var props = layer.feature.properties;
 
-            //add city to popup content string
-            var popupContent = "<p><b>City:</b> " + props.Country + "</p>";
+                        //update each feature's radius based on new attribute values
+                        var radius = calcPropRadius(props[attribute]);
+                        layer.setRadius(radius);
 
-            //add formatted attribute to panel content string
-            var year = attribute.split("_")[1];
-            popupContent += "<p><b>Population in " + month + ":</b> " + props[attribute] + " million</p>";
+                        //add city to popup content string
+                        var popupContent = "<p><b>City:</b> " + props.Country + "</p>";
 
-            //replace the layer popup
-            layer.bindPopup(popupContent, {
-                offset: new L.Point(0,-radius)
-            });
-        };
+                        var month = attribute.split("_")[1];
+                         popupContent += "<p><b>Month:</b> " + attribute +"</p>";
+
+                        //add formatted attribute to panel content string
+                        var year = attribute.split("_")[1];
+                        popupContent += "<p><b>Number of asylum seekers:</b> " + layer.feature.properties[attribute] + "</p>";
+
+                        //replace the layer popup
+                        layer.bindPopup(popupContent, {
+                            offset: new L.Point(0,-radius)
+                        });
+                    }; //end of if statement
+
+        });
+
+        
 };
 
 
@@ -131,7 +174,7 @@ function createSequenceControls(map){
     
     //set slider attributes
     $('.range-slider').attr({
-        max: 1,
+        max: 11,
         min: 0,
         value: 0,
         step: 1
@@ -154,11 +197,11 @@ function createSequenceControls(map){
 		if ($(this).attr('id') == 'forward'){
 			index++;
 			//if past the last attribute, wrap around to first attribute
-			index = index > 6 ? 0 : index;
+			index = index > 11 ? 0 : index;
 		} else if ($(this).attr('id') == 'reverse'){
 			index--;
 			//if past the first attribute, wrap around to last attribute
-			index = index < 0 ? 6 : index;
+			index = index < 0 ? 11 : index;
 		};
 
 		//update slider
@@ -169,10 +212,11 @@ function createSequenceControls(map){
 	});
 
 	//input listener for slider
-	$('.range-slider').on('input', function(){
+	$('.range-slider').on('change', function(){
 		//get the new index value
 		var index = $(this).val();
 
+        console.log(index);
 		//pass new attribute to update symbols
 		updatePropSymbols(map, attributes[index]);
 	});
