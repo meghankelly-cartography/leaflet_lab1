@@ -24,8 +24,15 @@ function getDataChoro(map){
 
             choropleth = response;
            //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(choropleth, {style: style}).addTo(map);
-            L.control.layers(choropleth).addTo(map);
+            //L.geoJson(choropleth, {style: style}).addTo(map);
+            
+            var a = L.geoJson(choropleth, {style: style});
+            
+            var overlayMaps = {
+            	"Choropleth": a,
+            };
+            
+            L.control.layers(null, overlayMaps).addTo(map);
         }
     });
 };
@@ -268,6 +275,9 @@ function getData(map){
         }
     });
 };
+
+
+
 
 
 $(document).ready(createMap);
