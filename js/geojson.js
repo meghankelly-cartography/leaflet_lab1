@@ -3,7 +3,7 @@ function createMap(){
     //create the map
     var map = L.map('map', {
         center: [54, 10],
-        zoom: 3,
+        zoom: 3
     });
 
 	L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
@@ -12,10 +12,17 @@ function createMap(){
 
     //call getData function
     getData(map);
-    getDataChoro(map);
 };
 
-//Import GeoJSON data
+//Global variable that will house the control panel
+var control;
+
+//FIFTH INTERACTION OPERATOR
+//OVERLAY showing number of refugees as a percentage of the host country's population
+//The next three functions apply to my overlay 
+//The first function gets my data and adds it to the control
+//The second two functions define styles and classifications within the choropleth overlay
+//Import GeoJSON data for the fifth interaction operator
 function getDataChoro(map){
     //load the data with callback function
     $.ajax("data/europeData.geojson", {
@@ -25,14 +32,12 @@ function getDataChoro(map){
             choropleth = response;
            //create a Leaflet GeoJSON layer and add it to the map
             //L.geoJson(choropleth, {style: style}).addTo(map);
-            
+        
+        
             var a = L.geoJson(choropleth, {style: style});
             
-            var overlayMaps = {
-            	"Choropleth": a,
-            };
-            
-            L.control.layers(null, overlayMaps).addTo(map);
+            //ADD FIFTH OPERATOR (OVERLAY) TO CONTROL PANEL
+            control.addOverlay(a, "Choropleth");
         }
     });
 };
@@ -138,16 +143,21 @@ function createPropSymbols(data, map, attributes){
         }
     });
     
+    
+	//Creates structure within control panel
     var overlayMaps = {
-    	"Sequence": b,
+    	"Sequence": b
     };
     
-    L.control.layers(null, overlayMaps).addTo(map);
+    //ADDS THE CONTROL PANEL FOR THE FIFTH INTERACTION OPERATOR
+	control = L.control.layers(null, overlayMaps).addTo(map);
+    //Default proportional symbols to map on load
+    b.addTo(map);
+    
+    //Call ajax function to get the data for choropleth
+    getDataChoro(map);
+        
 };
-
-
-
-
 
 //Step 10: Resize proportional symbols according to new attribute values
 function updatePropSymbols(map, attribute){
@@ -314,51 +324,22 @@ function getData(map){
 };
 
 function createLegend(map, attributes){
-	var LegendControl = L.Control.extend({
-		options: {
-			position: 'bottomright'
-		},
+    var LegendControl = L.Control.extend({
+        options: {
+            position: 'bottomright'
+        },
 
-		onAdd: function (map) {
-			// create the control container with a particular class name
-			var container = L.DomUtil.create('div', 'legend-control-container');
+        onAdd: function (map) {
+            // create the control container with a particular class name
+            var container = L.DomUtil.create('div', 'legend-control-container');
 
-			//add temporal legend div to container
-			$(container).append('<div id="temporal-legend">')
+            //PUT YOUR SCRIPT TO CREATE THE TEMPORAL LEGEND HERE
 
-			//start attribute legend svg string
-			var svg = '<svg id="attribute-legend" width="160px" height="60px">';
+            return container;
+        }
+    });
 
-			//array to base loop on
-			var circles = {
-				max: 20,
-				mean: 40,
-				min: 60
-			};
-
-			//loop to add each circle and text to svg string
-			for (var circle in circles){
-				//circle string
-				svg += '<circle class="legend-circle" id="' + circle + '" fill="#F47821" fill-opacity="0.8" stroke="#000000" cx="30"/>';
-
-				//text string
-				svg += '<text id="' + circle + '-text" x="65" y="' + circles[circle] + '"></text>';
-			};
-
-			//close svg string
-			svg += "</svg>";
-
-			//add attribute legend svg to container
-			$(container).append(svg);
-
-			return container;
-		}
-	});
-
-	map.addControl(new LegendControl());
-
-	updateLegend(map, attributes[0]);
+    map.addControl(new LegendControl());
 };
-
 
 $(document).ready(createMap);

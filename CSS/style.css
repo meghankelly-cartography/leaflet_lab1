@@ -36,6 +36,7 @@
 		
 #panel {
     width: 36%;
+    height: 300px;
     padding: 5px;
     display: inline-block;
     vertical-align: top;
