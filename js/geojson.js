@@ -132,12 +132,21 @@ function pointToLayer(feature, latlng){
 //Add circle markers for point features to the map
 function createPropSymbols(data, map, attributes){
     //create a Leaflet GeoJSON layer and add it to the map
-    L.geoJson(data, {
+    var b = L.geoJson(data, {
         pointToLayer: function(feature, latlng){
             return pointToLayer(feature, latlng, attributes);
         }
-    }).addTo(map);
+    });
+    
+    var overlayMaps = {
+    	"Sequence": b,
+    };
+    
+    L.control.layers(null, overlayMaps).addTo(map);
 };
+
+
+
 
 
 //Step 10: Resize proportional symbols according to new attribute values
@@ -174,10 +183,40 @@ function updatePropSymbols(map, attribute){
 };
 
 
-//Step 1: Create new sequence controls
-function createSequenceControls(map){
-    //create range input element (slider)
-    $('#panel').append('<input class="range-slider" type="range">');
+//Create new sequence controls
+function createSequenceControls(map, attributes){   
+    var SequenceControl = L.Control.extend({
+        options: {
+            position: 'bottomleft'
+        },
+
+		//Example 2.3 line 1
+        onAdd: function (map) {
+            // create the control container with a particular class name
+            var container = L.DomUtil.create('div', 'sequence-control-container');
+
+            //create range input element (slider)
+            $(container).append('<input class="range-slider" type="range">');
+
+            //add skip buttons
+            //$(container).append('<button class="skip" id="reverse" title="Reverse">Reverse</button>');
+            //$(container).append('<button class="skip" id="forward" title="Forward">Skip</button>');
+			
+			//Below Example 3.5...replace button content with images
+   			//$('#reverse').html('<img src="img/reverse2.png">');
+    		//$('#forward').html('<img src="img/forward2.png">');
+    
+			//kill any mouse event listeners on the map
+            $(container).on('mousedown dblclick', function(e){
+                L.DomEvent.stopPropagation(e);
+            });
+
+            return container;
+        }
+
+    });
+
+    map.addControl(new SequenceControl());
     
     //set slider attributes
     $('.range-slider').attr({
@@ -186,10 +225,6 @@ function createSequenceControls(map){
         value: 0,
         step: 1
     });
-    
-    //below Example 3.4...add skip buttons
-    $('#panel').append('<button class="skip" id="reverse">Reverse</button>');
-    $('#panel').append('<button class="skip" id="forward">Skip</button>');
     
     //Below Example 3.5...replace button content with images
     $('#reverse').html('<img src="img/reverse2.png">');
@@ -271,16 +306,59 @@ function getData(map){
 
 			//call function to create sequence control
             createSequenceControls(map, attributes);
+            
+            createLegend(map, attributes);
 
         }
     });
 };
 
+function createLegend(map, attributes){
+	var LegendControl = L.Control.extend({
+		options: {
+			position: 'bottomright'
+		},
 
+		onAdd: function (map) {
+			// create the control container with a particular class name
+			var container = L.DomUtil.create('div', 'legend-control-container');
 
+			//add temporal legend div to container
+			$(container).append('<div id="temporal-legend">')
+
+			//start attribute legend svg string
+			var svg = '<svg id="attribute-legend" width="160px" height="60px">';
+
+			//array to base loop on
+			var circles = {
+				max: 20,
+				mean: 40,
+				min: 60
+			};
+
+			//loop to add each circle and text to svg string
+			for (var circle in circles){
+				//circle string
+				svg += '<circle class="legend-circle" id="' + circle + '" fill="#F47821" fill-opacity="0.8" stroke="#000000" cx="30"/>';
+
+				//text string
+				svg += '<text id="' + circle + '-text" x="65" y="' + circles[circle] + '"></text>';
+			};
+
+			//close svg string
+			svg += "</svg>";
+
+			//add attribute legend svg to container
+			$(container).append(svg);
+
+			return container;
+		}
+	});
+
+	map.addControl(new LegendControl());
+
+	updateLegend(map, attributes[0]);
+};
 
 
 $(document).ready(createMap);
-
-
-

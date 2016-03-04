@@ -12,21 +12,36 @@
 .navbar{
 	padding-left:0%;
 	padding-top:0px;
-
+}
+.navbar-brand{
+	padding-left:10px;
+	padding-top:0px;
 }
 
 #title{
-	padding-left:0%;
+	padding-left:30px;
 	padding-top:50px;
+}
+
+#title_p{
+	padding-left:30px;
 }
 
 
 #map {
-    height: 400px;
-    width: 70%;
+    height: 500px;
+    width: 60%;
     display: inline-block;
 }
 		
+#panel {
+    width: 36%;
+    padding: 5px;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    line-height: 42px;
+}
 		
 p {
    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
@@ -50,17 +65,27 @@ h2 {font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue"
 }
 
 
-#panel {
-    width: 26%;
-    padding: 5px;
-    display: inline-block;
-    vertical-align: top;
-    text-align: center;
-    line-height: 42px;
+.sequence-control-container, .legend-control-container {
+	background-color: rgba(255,255,255,0.8);
+	padding: 10px;
+	text-align: center;
+	border: solid gray 1px;
 }
 
-.range-slider {
-    width: 40%;
+.legend-control-container {
+	height: 150px;
+	width: 150px;	
+}
+
+.sequence-control-container {
+	width: 18-px;
+	height: 30px;
+	line-height: 45px;
+}
+
+#temporal-legend {
+	font-weight: bold;
+	font-size: 1.5em;
 }
 
 #forward {
@@ -69,4 +94,7 @@ h2 {font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue"
 
 #reverse {
     float: left;
+}
+.range-slider {
+    width: 200px;
 }
