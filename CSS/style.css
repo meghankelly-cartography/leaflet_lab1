@@ -64,6 +64,13 @@ h2 {font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue"
    color: black;
 }
 
+h4 {font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+   font-weight: 300;
+   color: black;
+   text-align: center;
+
+}
+
 
 .leaflet-popup-content p {
     margin: 0.2em 0;
