@@ -114,7 +114,7 @@ function pointToLayer(feature, latlng){
 
     //add formatted attribute to popup content string
     var month = attribute.split("_")[1];
-    popupContent += "<p><b>Month:</b> " + attribute +"</p>";
+    popupContent += "<p><b>Month:</b> " + month +"</p>";
     
     //add formatted attribute to popup content string
     var year = attribute.split("_")[1];
@@ -180,7 +180,7 @@ function updatePropSymbols(map, attribute){
                         var popupContent = "<p><b>City:</b> " + props.Country + "</p>";
 
                         var month = attribute.split("_")[1];
-                         popupContent += "<p><b>Month:</b> " + attribute +"</p>";
+                        popupContent += "<p><b>Month:</b> " + month + "</p>";
 
                         //add formatted attribute to panel content string
                         var year = attribute.split("_")[1];
