@@ -2,7 +2,7 @@
 function createMap(){
     //create map and set map parameters and constraints
     var map = L.map('map', {
-        center: [50, 22],
+        center: [50, 23],
         zoom: 3,
         minZoom: 3,
         maxZoom: 5,
