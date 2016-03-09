@@ -43,6 +43,22 @@
     width: 60%;
     display: inline-block;
 }
+
+#max-text{
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+	color: white;
+}
+
+#mean-text{
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+	color: white;
+}
+
+#min-text{
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+	color: white;
+}
+	
 		
 #panel {
     width: 36%;
@@ -103,6 +119,7 @@ h4 {
 }
 
 #temporal-legend {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
 	font-weight: bold;
 	font-size: 1.5em;
 	color: white;
