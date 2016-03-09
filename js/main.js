@@ -1,6 +1,6 @@
-//function to instantiate the Leaflet map
+//function to load Leaflet map
 function createMap(){
-    //create the map
+    //create map and set map parameters and constraints
     var map = L.map('map', {
         center: [54, 10],
         zoom: 3,
@@ -9,44 +9,39 @@ function createMap(){
         zoomControl: false
     });
 
+	//add zoom control that returns viewer to original zoom level
 	map.addControl(new L.Control.ZoomMin())
 	
+	//load OSM tile set and add to map
 	L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
 	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
 	}).addTo(map);
 
     //call getData function
+    //this function uses ajax to load point data for proportional symbolization
     getData(map);
 };
 
-//Global variable that will house the control panel
+//set global variable that will house the overlay control panel
 var control;
 
-//FIFTH INTERACTION OPERATOR
-//OVERLAY showing number of refugees as a percentage of the host country's population
-//The next three functions apply to my overlay 
-//The first function gets my data and adds it to the control
-//The second two functions define styles and classifications within the choropleth overlay
-//Import GeoJSON data for the fifth interaction operator
+//function that will load choropleth overlay data
 function getDataChoro(map){
     //load the data with callback function
     $.ajax("data/europeData.geojson", {
         dataType: "json",
         success: function(response){
-
-            choropleth = response;
-           //create a Leaflet GeoJSON layer and add it to the map
-            //L.geoJson(choropleth, {style: style}).addTo(map);
-        
-        
-            var a = L.geoJson(choropleth, {style: style});
+			
+			//set variable to house data response with style
+            var a = L.geoJson(response, {style: style});
             
-            //ADD FIFTH OPERATOR (OVERLAY) TO CONTROL PANEL
+            //add variable with response data to overlay panel
             control.addOverlay(a, "Europe's problem?");
         }
     });
 };
 
+//function that classifies and applies color swatches to choropleth data
 function getColor(d) {
     return d > 10000000 ? '#08519c' :
            d > 5000000  ? '#3182bd' :
@@ -56,6 +51,8 @@ function getColor(d) {
                           'white';
 }
 
+//function that sets the attribute being mapped (refugees/host population)
+//also sets styling of line weights and fills
 function style(feature) {
     return {
         fillColor: getColor(feature.properties.pop_est),
@@ -66,8 +63,6 @@ function style(feature) {
         fillOpacity: 0.6
     };
 }
-
-
 
 //calculate the radius of each proportional symbol
 function calcPropRadius(attValue) {
@@ -81,45 +76,41 @@ function calcPropRadius(attValue) {
     return radius;
 };
 
-//function to convert markers to circle markers
+//convert point markers to circle markers
 function pointToLayer(feature, latlng){
     
     var attribute = attributes[0];
-    
-    //check, this works
-    console.log(attribute);
-    
-    //console.log("This is also working!");
 	
-	//Create marker options
+	//marker styling
 	var options = {
-		//fillColor: "blue",
 		color: "white",
 		weight: 1,
 		opacity: 1,
 		fillOpacity: 0.6,
 	};
 	
-	//For each feature, determine its value for the selected attribute
+	//define the attribute value for each feature
+	//attribute is number of asylum seekers 
 	var attValue = Number(feature.properties[attribute]);
 	
-	//Give each feature's circle marker a radius based on its attribute value
+	//give circle marker a radius based on its attribute value
 	options.radius = calcPropRadius(attValue);
 	
 	//create circle marker layer
 	var layer = L.circleMarker(latlng, options);
 	
-	//build popup content string starting with city...Example 2.1 line 24
+	//build popup content string with country name
     var popupContent = "<p><b>Country:</b> " + feature.properties.Country + "</p>";
 
-    //add formatted attribute to popup content string
+    //add month information to attribute string in popup
     var month = attribute.split("_")[1];
     popupContent += "<p><b>Month:</b> " + month +"</p>";
     
-    //add formatted attribute to popup content string
+    //add and format attribute info (number of asylum seekers) to popup content string
     var year = attribute.split("_")[1];
     popupContent += "<p><b>Number of asylum seekers:</b> " + feature.properties[attribute] + "</p>";
     
+    //bind popup and content to marker and offset popup to avoid overlap
     layer.bindPopup(popupContent, {
         offset: new L.Point(0,-options.radius)
     });
@@ -133,13 +124,12 @@ function pointToLayer(feature, latlng){
             this.closePopup();
         }
     });
-    
 	
 	//return the circle marker to the L.geojson pointToLayer option
 	return layer;
 };
 
-//Add circle markers for point features to the map
+//add circle markers (proportional symbols) for point features to the map
 function createPropSymbols(data, map, attributes){
     //create a Leaflet GeoJSON layer and add it to the map
     var b = L.geoJson(data, {
@@ -148,63 +138,69 @@ function createPropSymbols(data, map, attributes){
         }
     });
     
-    
-	//Creates structure within control panel
+	//variable to houses prop data that will be added to control panel
     var overlayMaps = {
     	"Influx into Europe": b
     };
     
-    //ADDS THE CONTROL PANEL FOR THE FIFTH INTERACTION OPERATOR
+    //add control panel and add the prop data to the overlay panel
 	control = L.control.layers(null, overlayMaps).addTo(map);
-    //Default proportional symbols to map on load
+    
+    //load proportional symbols to map as default on load
     b.addTo(map);
     
-    //Call ajax function to get the data for choropleth
+    //call ajax function to get the data for choropleth
     getDataChoro(map);
-        
 };
 
-//Step 10: Resize proportional symbols according to new attribute values
+//resize proportional symbols based on new/updated attribute values
 function updatePropSymbols(map, attribute){
+		
+	//access all map layers
+	map.eachLayer(function(layer, feature){
+        
+        //SQL to only select layers that are features that have attribute value   
+        if (layer.feature && layer.feature.properties[attribute]){
+                        
+            //access feature properties
+            var props = layer.feature.properties;
 
-        map.eachLayer(function(layer, feature){
-            if (layer.feature && layer.feature.properties[attribute]){
-                        //access feature properties
-                        var props = layer.feature.properties;
+            //update each feature's radius based on new attribute values
+            var radius = calcPropRadius(props[attribute]);
+            layer.setRadius(radius);
 
-                        //update each feature's radius based on new attribute values
-                        var radius = calcPropRadius(props[attribute]);
-                        layer.setRadius(radius);
+			//popup content string with country name
+            var popupContent = "<p><b>City:</b> " + props.Country + "</p>";
 
-                        //add city to popup content string
-                        var popupContent = "<p><b>City:</b> " + props.Country + "</p>";
+    		//add month information to attribute string in popup
+			 var month = attribute.split("_")[1];
+            popupContent += "<p><b>Month:</b> " + month + "</p>";
 
-                        var month = attribute.split("_")[1];
-                        popupContent += "<p><b>Month:</b> " + month + "</p>";
+    		//add and format attribute info (number of asylum seekers) to popup content string
+            var year = attribute.split("_")[1];
+        	popupContent += "<p><b>Number of asylum seekers:</b> " + layer.feature.properties[attribute] + "</p>";
 
-                        //add formatted attribute to panel content string
-                        var year = attribute.split("_")[1];
-                        popupContent += "<p><b>Number of asylum seekers:</b> " + layer.feature.properties[attribute] + "</p>";
-
-                        //replace the layer popup
-                        layer.bindPopup(popupContent, {
-                            offset: new L.Point(0,-radius)
-                        });
-                    }; //end of if statement
-        });  
+            //replace the layer popup
+            layer.bindPopup(popupContent, {
+                offset: new L.Point(0,-radius)
+            });
+    	}; //end of if statement
+	});  
         
     //update sequence legend
 	updateLegend(map, attribute);    
 };
 
 
-//Calculate the max, mean, and min values for a given attribute
+//calculate the max, mean, and min values for a given attribute
 function getCircleValues(map, attribute){
     //start with min at highest possible and max at lowest possible number
     var min = Infinity,
         max = -Infinity;
 
-    map.eachLayer(function(layer){
+	//access all map layers
+	map.eachLayer(function(layer){
+	
         //get the attribute value
         if (layer.feature){
             var attributeValue = Number(layer.feature.properties[attribute]);
@@ -247,54 +243,50 @@ function updateLegend(map, attribute){
         //get the radius
         var radius = calcPropRadius(circleValues[key]);
 
-        //Step 3: assign the cy and r attributes
+        //assign the cy and radius attributes
         $('#'+key).attr({
             cy: 59 - radius,
             r: radius
         });
         
-        //Step 4: add legend text
+        //add legend text
         $('#'+key+'-text').text(Math.round(circleValues[key]*100)/100 + " refugees");
     };
 };
 
 
-//Create new sequence controls
+//function to create sequence/temporal control
 function createSequenceControls(map, attributes){   
+    
+    //add control and set position, in this case, bottomleft
     var SequenceControl = L.Control.extend({
         options: {
             position: 'bottomleft'
         },
-
-		//Example 2.3 line 1
+		
+		//set parameters on load
         onAdd: function (map) {
-            // create the control container with a particular class name
+            //create the control container with a particular class name
+            //style in css
             var container = L.DomUtil.create('div', 'sequence-control-container');
 
-            //create range input element (slider)
+            //create slider
             $(container).append('<input class="range-slider" type="range">');
-
-            //add skip buttons
-            //$(container).append('<button class="skip" id="reverse" title="Reverse">Reverse</button>');
-            //$(container).append('<button class="skip" id="forward" title="Forward">Skip</button>');
-			
-			//Below Example 3.5...replace button content with images
-   			//$('#reverse').html('<img src="img/reverse2.png">');
-    		//$('#forward').html('<img src="img/forward2.png">');
     
 			//kill any mouse event listeners on the map
+			//helps prevent unintended zooming when using slider bar
             $(container).on('mousedown dblclick', function(e){
                 L.DomEvent.stopPropagation(e);
             });
 
             return container;
         }
-
     });
 
+	//actually add control
     map.addControl(new SequenceControl());
     
-    //set slider attributes
+    //set slider attributes including the number attributes (an array of 12 months) and the steps through array
     $('.range-slider').attr({
         max: 11,
         min: 0,
@@ -302,11 +294,8 @@ function createSequenceControls(map, attributes){
         step: 1
     });
     
-    //Below Example 3.5...replace button content with images
-    $('#reverse').html('<img src="img/reverse2.png">');
-    $('#forward').html('<img src="img/forward2.png">');
-    
    //click listener for buttons
+   //might not need these?
 	$('.skip').click(function(){
 		//get the old index value
 		var index = $('.range-slider').val();
@@ -340,11 +329,10 @@ function createSequenceControls(map, attributes){
 	});
 };
 
+//global variable to hold attributes (monthly asylum data) in an array
+var attributes = [];
 
-	//empty array to hold attributes
-	var attributes = [];
-
-//Above Example 3.8...Step 3: build an attributes array from the data
+//function to build an attributes array from the data
 function processData(data){
 	
     //properties of the first feature in the dataset
@@ -352,27 +340,23 @@ function processData(data){
 
     //push each attribute name into attributes array
     for (var attribute in properties){
+    
         //only take attributes with population values
         if (attribute.indexOf("month_") > -1){
             attributes.push(attribute);
         };
     };
 
-    //check result
-    console.log(attributes);
-
     return attributes;
 };
 
-//Import GeoJSON data
+//import point GeoJSON data
 function getData(map){
+
     //load the data with callback function
     $.ajax("data/Europe.geojson", {
         dataType: "json",
         success: function(response){
-
-            //console.log(response.features[1].properties)
-            //console.log(response.features)
 
             // create array of attributes
             var attributes = processData(response);
@@ -383,12 +367,16 @@ function getData(map){
 			//call function to create sequence control
             createSequenceControls(map, attributes);
             
+            //call function to create legend
             createLegend(map, attributes);
         }
     });
 };
 
+//function to create temporal and attribute legend
 function createLegend(map, attributes){
+
+    //add control and set position, in this case, bottomright
     var LegendControl = L.Control.extend({
         options: {
             position: 'bottomright'
@@ -401,22 +389,22 @@ function createLegend(map, attributes){
 			//add temporal legend div to container
 			$(container).append('<div id="temporal-legend">')
 				
-			//Example 3.5 line 15...Step 1: start attribute legend svg string
+			//start attribute legend svg string
         	var svg = '<svg id="attribute-legend" width="160px" height="60px">';
 
-        	//object to base loop on...replaces Example 3.10 line 1
-        var circles = {
-            max: 20,
-            mean: 40,
-            min: 60
+        	//object to base loop on
+        	var circles = {
+            	max: 20,
+            	mean: 40,
+            	min: 60
         };
 
         //loop to add each circle and text to svg string
         for (var circle in circles){
-            //circle string
+            //circle string with styling
             svg += '<circle class="legend-circle" id="' + circle + '" fill="white" fill-opacity="0.6" stroke="white" cx="30"/>';
 
-            //text string
+            //create text string
             svg += '<text id="' + circle + '-text" x="65" y="' + circles[circle] + '"></text>';
         };
 
@@ -430,9 +418,12 @@ function createLegend(map, attributes){
         }
     });
 
+	//actually add controls to map layout
     map.addControl(new LegendControl());
     
+    //call updateLegend function that will temporally update the text and circle sizes
     updateLegend(map, attributes[0]);
 };
 
+//FINALLY, Load map when ready!
 $(document).ready(createMap);
