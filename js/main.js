@@ -3,9 +3,14 @@ function createMap(){
     //create the map
     var map = L.map('map', {
         center: [54, 10],
-        zoom: 3
+        zoom: 3,
+        minZoom: 3,
+        maxZoom: 5,
+        zoomControl: false
     });
 
+	map.addControl(new L.Control.ZoomMin())
+	
 	L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
 	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
 	}).addTo(map);
@@ -37,7 +42,7 @@ function getDataChoro(map){
             var a = L.geoJson(choropleth, {style: style});
             
             //ADD FIFTH OPERATOR (OVERLAY) TO CONTROL PANEL
-            control.addOverlay(a, "Choropleth");
+            control.addOverlay(a, "Europe's problem?");
         }
     });
 };
@@ -146,7 +151,7 @@ function createPropSymbols(data, map, attributes){
     
 	//Creates structure within control panel
     var overlayMaps = {
-    	"Sequence": b
+    	"Influx into Europe": b
     };
     
     //ADDS THE CONTROL PANEL FOR THE FIFTH INTERACTION OPERATOR

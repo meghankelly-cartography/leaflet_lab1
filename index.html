@@ -14,16 +14,47 @@
 
 	<body>
 	
-	<nav class="navbar navbar-default navbar-fixed-top main-navbar navbar navbar-inverse"> <!--Creates navbar-->
+			<nav class="navbar navbar-default navbar-fixed-top main-navbar navbar navbar-inverse"> <!--Creates navbar-->
 		<div class="container">
 			<div class="navbar-header"> <!--Creates the navbar header-->
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <!--Used for screen readers for accessibility-->
+					<span class="glyphicon glyphicon-menu-hamburger"></span>
+					<span class="menu">Menu</span>
+				</button> <!--Hamburger button for smaller devices-->
 
 			<a class="navbar-brand" href="index.html">Meghan Kelly Cartography</a>
 			</div>
+
+			<div id="navbar" class="collapse navbar-collapse navbar-inverse"> <!--Links in navbar-->
+				<ul class="nav navbar-nav"> <!-- Unordered list for links on navbar -->
+					<li role="presentation"><a href="#">Home</a></li>
+  			<li role="presentation"><a href="aboutme.html">About Me</a></li>
+  			
+ 			<li role="presentation" class="active"><a data-toggle="dropdown" class="dropdown-toggle" class="active" href="index.html">Portfolio<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                	<li><a href="portfolio.html" class="active">My Portfolio</a></li>
+                	<li><a href="finalproj.html">Final Project</a></li>
+                    <li><a href="Syria.html">Infographic: Syria</a></li>
+                    <li><a href="Crimea.html">Resources in Crimea</a></li>
+                    <li><a href="Terrain.html">Terrain Representation</a></li>
+                    <li><a href="DesignChallenge.html">Design Challenge</a></li>
+                    <li><a href="Minard1.html">Charles Minard 1</a></li>
+                    <li><a href="Minard2.html">Charles Minard 2</a></li>
+                    <li><a href="Lynch.html">Kevin Lynch</a></li>
+                    <li><a href="MP.html">Margaret Pearce</a></li>
+                </ul>
+            </li>
+ 			
+ 			<li role="presentation"><a href="http://mappingborders.github.io/">Mapping Borders</a></li>
+ 			<li role="presentation"><a href="resources.html">Resources</a></li>
+				</ul>
+			</div> <!-- end .navbar-collapse -->
+		</div> <!-- end .container -->
 	</nav> <!-- end navigation bar -->
 		
 			
-			<h2 id="title" class="page-header">Syrian Refugess: Europe's Problem?</h2>
+<h1 id="title" class="page-header"><strong>Syrian Refugees:</strong> Europe's Problem?</h1>
 
 					
 <div id="panel" class="container">
@@ -58,9 +89,9 @@
       <div id="collapse2" class="panel-collapse collapse">
         <div class="panel-body">
         
-        <p>The map to the right shows the <b>progression of Syrians </b>seeking asylum in Europe by <b>month in 2015</b>. Use the slider bar to cycle through by month.
+        <p>The map to the right shows the progression of Syrians seeking asylum in Europe by month in 2015. Use the slider bar to cycle through by month.
         </p>
-        <p>The map to the right shows the progression of Syrians seeking assylum in Europe by month in 2015. Use the slider bar to cycle through by month.
+        <p>The map to the right shows the progression of Syrians seeking assylum in Europe by month in 2015. Use the slider bar in the bottom left to cycle through by month.
         </p></div>
       </div>
     </div>
@@ -79,10 +110,12 @@
         <img src="img/Color_swatches.png"
 							alt="Color Legend" />
 							</a>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </p></div>
+        <p>Turn on the <strong>shaded choropleth </strong>
+        </p>
+        <p>As a percent of population, however, the number of refugees in Europe is less dramatic. 
+        Less than one percent of Germany's population consists of Syrian refugees. In contrast, Jordan's population has increased by a third and has significant effects on local populations. 
+        These findings beg the question: <b>Is this really Europe's problem?</b>  </p>
+        </div>
       </div>
     </div>
   </div> 
@@ -96,5 +129,7 @@
 		<script type="text/javascript" src="lib/leaflet/leaflet-src.js"></script>
 		<script type="text/javascript" src="js/bootstrap.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
+		<script type="text/javascript" src="js/L.Control.ZoomMin.js"></script>
+
 		<!-- <script type="text/javascript" src="js/geojson.js"></script> -->
 </html>
