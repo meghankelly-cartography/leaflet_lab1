@@ -197,6 +197,41 @@ function updatePropSymbols(map, attribute){
 	updateLegend(map, attribute);    
 };
 
+
+//Calculate the max, mean, and min values for a given attribute
+function getCircleValues(map, attribute){
+    //start with min at highest possible and max at lowest possible number
+    var min = Infinity,
+        max = -Infinity;
+
+    map.eachLayer(function(layer){
+        //get the attribute value
+        if (layer.feature){
+            var attributeValue = Number(layer.feature.properties[attribute]);
+
+            //test for min
+            if (attributeValue < min){
+                min = attributeValue;
+            };
+
+            //test for max
+            if (attributeValue > max){
+                max = attributeValue;
+            };
+        };
+    });
+
+    //set mean
+    var mean = (max + min) / 2;
+
+    //return values as an object
+    return {
+        max: max,
+        mean: mean,
+        min: min
+    };
+};
+
 function updateLegend(map, attribute){
 	//create content for legend
 	var month = attribute.split("_")[1];
@@ -204,6 +239,23 @@ function updateLegend(map, attribute){
 
 	//replace legend content
 	$('#temporal-legend').html(content);
+	
+	//get the max, mean, and min values as an object
+    var circleValues = getCircleValues(map, attribute);
+    
+    for (var key in circleValues){
+        //get the radius
+        var radius = calcPropRadius(circleValues[key]);
+
+        //Step 3: assign the cy and r attributes
+        $('#'+key).attr({
+            cy: 59 - radius,
+            r: radius
+        });
+        
+        //Step 4: add legend text
+        $('#'+key+'-text').text(Math.round(circleValues[key]*100)/100 + " refugees");
+    };
 };
 
 
@@ -349,7 +401,30 @@ function createLegend(map, attributes){
 			//add temporal legend div to container
 			$(container).append('<div id="temporal-legend">')
 				
-            console.log("This works, here!");
+			//Example 3.5 line 15...Step 1: start attribute legend svg string
+        	var svg = '<svg id="attribute-legend" width="160px" height="60px">';
+
+        	//object to base loop on...replaces Example 3.10 line 1
+        var circles = {
+            max: 20,
+            mean: 40,
+            min: 60
+        };
+
+        //loop to add each circle and text to svg string
+        for (var circle in circles){
+            //circle string
+            svg += '<circle class="legend-circle" id="' + circle + '" fill="white" fill-opacity="0.6" stroke="white" cx="30"/>';
+
+            //text string
+            svg += '<text id="' + circle + '-text" x="65" y="' + circles[circle] + '"></text>';
+        };
+
+        	//close svg string
+        	svg += "</svg>";
+
+        	//add attribute legend svg to container
+        	$(container).append(svg);
             
             return container;
         }
