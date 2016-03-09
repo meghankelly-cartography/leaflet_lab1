@@ -2,7 +2,7 @@
 function createMap(){
     //create map and set map parameters and constraints
     var map = L.map('map', {
-        center: [54, 10],
+        center: [50, 22],
         zoom: 3,
         minZoom: 3,
         maxZoom: 5,
@@ -43,11 +43,11 @@ function getDataChoro(map){
 
 //function that classifies and applies color swatches to choropleth data
 function getColor(d) {
-    return d > 10 ? '#08519c' :
-           d > 2  ? '#3182bd' :
-           d > 0.75  ? '#6baed6' :
-           d > 0.15  ? '#bdd7e7' :
-           d > 0   ? '#eff3ff' :
+    return d > 10 		? 	'#08519c' :
+           d > 2  		? 	'#3182bd' :
+           d > 0.75  	? 	'#6baed6' :
+           d > 0.15  	? 	'#bdd7e7' :
+           d > 0   		? 	'#eff3ff' :
                           'white';
 }
 
@@ -60,7 +60,7 @@ function style(feature) {
         opacity: 1,
         color: 'white',
         dashArray: '3',
-        fillOpacity: 0.8
+        fillOpacity: 0.6
     };
 }
 
@@ -86,7 +86,7 @@ function pointToLayer(feature, latlng){
 		color: "white",
 		weight: 1,
 		opacity: 1,
-		fillOpacity: 0.6,
+		fillOpacity: 0.8
 	};
 	
 	//define the attribute value for each feature
@@ -108,7 +108,7 @@ function pointToLayer(feature, latlng){
     
     //add and format attribute info (number of asylum seekers) to popup content string
     var year = attribute.split("_")[1];
-    popupContent += "<p><b>Number of asylum seekers:</b> " + feature.properties[attribute] + "</p>";
+    popupContent += "<p><b>Number of Refugees:</b> " + feature.properties[attribute] + "</p>";
     
     //bind popup and content to marker and offset popup to avoid overlap
     layer.bindPopup(popupContent, {
@@ -178,7 +178,7 @@ function updatePropSymbols(map, attribute){
 
     		//add and format attribute info (number of asylum seekers) to popup content string
             var year = attribute.split("_")[1];
-        	popupContent += "<p><b>Number of asylum seekers:</b> " + layer.feature.properties[attribute] + "</p>";
+        	popupContent += "<p><b>Number of Refugees:</b> " + layer.feature.properties[attribute] + "</p>";
 
             //replace the layer popup
             layer.bindPopup(popupContent, {
@@ -390,7 +390,7 @@ function createLegend(map, attributes){
 			$(container).append('<div id="temporal-legend">')
 				
 			//start attribute legend svg string
-        	var svg = '<svg id="attribute-legend" width="160px" height="60px">';
+        	var svg = '<svg id="attribute-legend" width="200px" height="200px">';
 
         	//object to base loop on
         	var circles = {
@@ -402,10 +402,10 @@ function createLegend(map, attributes){
         //loop to add each circle and text to svg string
         for (var circle in circles){
             //circle string with styling
-            svg += '<circle class="legend-circle" id="' + circle + '" fill="white" fill-opacity="0.6" stroke="white" cx="30"/>';
+            svg += '<circle class="legend-circle" id="' + circle + '" fill="white" fill-opacity="0.8" stroke="white" cx="30"/>';
 
             //create text string
-            svg += '<text id="' + circle + '-text" x="65" y="' + circles[circle] + '"></text>';
+            svg += '<text class="legend-text" id="' + circle + '-text" x="65" y="' + circles[circle] + '"></text>';
         };
 
         	//close svg string
